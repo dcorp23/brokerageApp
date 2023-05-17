@@ -27,7 +27,7 @@ app.post('/register', (req, res) => {
     const password = req.body.password;
 
     db.query(
-        "SELECT * FROM users WHERE username = ?", //check if the username is taken
+        "SELECT FROM users WHERE username = ?", //check if the username is taken
         [username], 
         (err, result) => {
             if (err) {
@@ -56,15 +56,12 @@ app.post('/login', (req, res) => {
     const password = req.body.password;
 
     db.query(
-        "SELECT * FROM users WHERE username = ? AND password = ?", 
+        "SELECT FROM users WHERE username = ? AND password = ?", 
         [username, password], 
         (err, result) => {
             if (err) {
                 res.send(err);
             }
-            console.log(result);
-            console.log(username);
-            console.log(password);
             if (result) {
                 if (result.length == 1) {
                     res.send(result);

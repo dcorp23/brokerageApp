@@ -4,13 +4,19 @@ import Axios from "axios";
 export const Register = () => {
     const [regUsername, setRegUsername] = useState("");
     const [regPassword, setRegPassword] = useState("");
+    const [regResponse, setRegResponse] = useState("");
 
     const register = () => {
         Axios.post("http://localhost:3000/register", {
-        username: regUsername,
-        password: regPassword
+            username: regUsername,
+            password: regPassword
         }).then((response) => {
-        console.log(response);
+            if (response.data.message) {
+                setRegResponse(response.data.message);
+            }
+            else {
+                setRegResponse("You have been registered");
+            }
         });
     };
   
@@ -20,8 +26,9 @@ export const Register = () => {
         <label>Username</label>
         <input type="text" onChange={(input) => {setRegUsername(input.target.value);}}></input>
         <label>Password</label>
-        <input type="text" onChange={(input) => {setRegPassword(input.target.value);}}></input>
+        <input type="password" onChange={(input) => {setRegPassword(input.target.value);}}></input>
         <button onClick={register}>Register</button>
+        <p>{regResponse}</p>
     </div>
     );
 };

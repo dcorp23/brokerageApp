@@ -1,16 +1,24 @@
 import React, { useState } from "react";
-import Axios from "axios";
 import './App.css';
 import Register from './Register';
 import Login from './Login';
-import DeleteUser from './DeleteUser';
+
 
 function App() {
+  const [userId] = useState(null);
+  const [showRegisterOrLogin, setShowRegisterOrLogin] = useState(true);
+
+  const swapRegisterLogin = () => {
+    setShowRegisterOrLogin(!showRegisterOrLogin);
+  }
+
   return (
     <>
-      <Register />
-      <Login />
-      <DeleteUser />
+      <div>
+        {showRegisterOrLogin ? <Login userId={null}/> : <Register />}
+      </div>
+      <label>{showRegisterOrLogin ? "Need an account? " : "Have an account? "}</label>
+      <button onClick={swapRegisterLogin}>{showRegisterOrLogin ? "Register" : "Login"}</button>
     </>
   );
 }
