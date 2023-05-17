@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Axios from "axios";
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [deleteUserId, setDeleteUserId] = useState(0);
+  const [regUsername, setRegUsername] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const register = () => {
+    Axios.post("http://localhost:3000/register", {
+      username: regUsername,
+      password: regPassword
+    }).then((response) => {
+      console.log(response);
+    });
+  }
+
+  const delete_user = () => {
+    Axios.post("http://localhost:3000/delete_user", {
+      userId: deleteUserId
+    }).then((response) => {
+      console.log(response);
+    });
+  }
 
   return (
     <>
+      <div className="input_card">
+        <h1>Register</h1>
+        <label>Username</label>
+        <input type="text" onChange={(input) => {setRegUsername(input.target.value);}}></input>
+        <label>Password</label>
+        <input type="text" onChange={(input) => {setRegPassword(input.target.value);}}></input>
+        <button onClick={register}>Register</button>
+      </div>
+      <div className="input_card">
+        <h1>Sign In</h1>
+        <label>Username</label>
+        <input type="text"></input>
+        <label>Password</label>
+        <input type="text"></input>
+        <button>Sign In</button>
+      </div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <></>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div className="input_card">
+        <input type="number" onChange={(input) => {setDeleteUserId(input.target.value);}}></input>
+        <button onClick={delete_user}>Delete User</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
 export default App
