@@ -27,10 +27,52 @@ app.post('/register', (req, res) => {
     const password = req.body.password;
 
     db.query(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
+        "SELECT * FROM users WHERE username = ?", //check if the username is taken
+        [username], 
+        (err, result) => {
+            if (err) {
+                res.send(err);
+            }
+            if (result) {
+                if (result.length != 0) { //if taken send message
+                    res.send({message : "Username already taken"});
+                }
+                else { //if not taken store in database
+                    db.query(
+                        "INSERT INTO users (username, password) VALUES (?, ?)",
+                        [username, password], 
+                        (err) => {
+                            res.send(err);
+                        }
+                    );
+                }
+            }
+        }
+    );
+});
+
+app.post('/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    db.query(
+        "SELECT * FROM users WHERE username = ? AND password = ?", 
         [username, password], 
         (err, result) => {
-            console.log(err);
+            if (err) {
+                res.send(err);
+            }
+            console.log(result);
+            console.log(username);
+            console.log(password);
+            if (result) {
+                if (result.length == 1) {
+                    res.send(result);
+                }
+                else {
+                    res.send({message : "Username/Password Incorrect"});
+                }
+            }
         }
     );
 });
@@ -43,7 +85,10 @@ app.post('/delete_user', (req, res) => {
         "DELETE FROM users WHERE id = ?",
         [userId], 
         (err, result) => {
-            console.log(err);
+            if (err) {
+                res.send(err);
+            }
+            res.send(result);
         }
     );
 });
