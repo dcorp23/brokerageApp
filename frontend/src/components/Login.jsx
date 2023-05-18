@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Axios from "axios";
+import { UserContext } from "../App";
 
 export const Login = () => {
     const [loginUsername, setLoginUsername] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [loginResponse, setLoginResponse] = useState("");
+    const {userId, setUserId, username, setUsername} = useContext(UserContext);
 
-    
-
-    const login = (UserId) => {
+    const login = () => {
         Axios.post("http://localhost:3000/login", {
             username: loginUsername,
             password: loginPassword
         }).then((response) => {
             if (response.data[0]) {
-                UserId = response.data[0].id;
-                setLoginResponse(UserId);
+                setUserId(response.data[0].id);
+                setUsername(response.data[0].username);
+                setLoginResponse(response.data[0].id);
             }
             else {
                 setLoginResponse(response.data.message);
