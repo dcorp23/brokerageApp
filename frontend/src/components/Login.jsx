@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 
 export const Login = () => {
@@ -7,6 +8,7 @@ export const Login = () => {
     const [loginPassword, setLoginPassword] = useState("");
     const [loginResponse, setLoginResponse] = useState("");
     const {userId, setUserId, username, setUsername} = useContext(UserContext);
+    let navigate = useNavigate();
 
     const login = () => {
         Axios.post("http://localhost:3000/login", {
@@ -17,6 +19,7 @@ export const Login = () => {
                 setUserId(response.data[0].id);
                 setUsername(response.data[0].username);
                 setLoginResponse(response.data[0].id);
+                navigate("/Portfolio");
             }
             else {
                 setLoginResponse(response.data.message);

@@ -1,8 +1,10 @@
 import React, { useState, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
-import { UserPage } from "./pages/UserPage";
+import { PortfolioPage } from "./pages/PortfolioPage";
 import { StockSearchPage } from "./pages/StockSearchPage";
+import { TradePage } from "./pages/TradePage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
 
 export const UserContext = createContext(null);
@@ -17,8 +19,10 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<LoginPage />}/>
-            <Route path="/User" element={<UserPage />}/>
+            <Route path="/Portfolio" element={<PortfolioPage />}/>
             <Route path="/Stocksearch" element={<StockSearchPage />}/>
+            <Route path="/Trade" element={<TradePage />}/>
+            <Route path="*" element={<NotFoundPage />}/>
           </Routes>
         </Router>
       </UserContext.Provider>

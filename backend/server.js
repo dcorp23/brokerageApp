@@ -1,8 +1,8 @@
-const express = require('express');
-const mysql = require('mysql');
-const cors = require('cors');
+import express, {json} from 'express';
+import { createConnection } from 'mysql';
+import cors from 'cors';
 
-const db = mysql.createConnection({
+const db = createConnection({
     host : 'localhost', 
     user : 'root', 
     password : 'password', 
@@ -18,7 +18,7 @@ db.connect((err) => {
 
 const app = express();
 
-app.use(express.json());
+app.use(json());
 app.use(cors());
 
 //Create account
@@ -27,13 +27,15 @@ app.post('/register', (req, res) => {
     const password = req.body.password;
 
     db.query(
-        "SELECT FROM users WHERE username = ?", //check if the username is taken
+        "SELECT * FROM users WHERE username = ?", //check if the username is taken
         [username], 
         (err, result) => {
             if (err) {
+                console.log(err);
                 res.send(err);
             }
             if (result) {
+                console.log(result);
                 if (result.length != 0) { //if taken send message
                     res.send({message : "Username already taken"});
                 }
@@ -56,13 +58,15 @@ app.post('/login', (req, res) => {
     const password = req.body.password;
 
     db.query(
-        "SELECT FROM users WHERE username = ? AND password = ?", 
+        "SELECT * FROM users WHERE username = ? AND password = ?", 
         [username, password], 
         (err, result) => {
             if (err) {
+                console.log(err);
                 res.send(err);
             }
             if (result) {
+                console.log(result);
                 if (result.length == 1) {
                     res.send(result);
                 }
