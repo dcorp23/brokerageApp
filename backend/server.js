@@ -1,6 +1,10 @@
-import express, {json} from 'express';
+import express from 'express';
 import { createConnection } from 'mysql';
 import cors from 'cors';
+
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
 
 const db = createConnection({
     host : 'localhost', 
@@ -18,8 +22,25 @@ db.connect((err) => {
 
 const app = express();
 
-app.use(json());
-app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true}));
+
+app.use(session({
+    key: "userId", 
+    secret: "thisIsTheSecret", 
+    resave: false, 
+    saveUninitialized: false, 
+    cookie: {
+        expires: 60 * 60 * 24
+    }
+}));
+
+app.use(cors({
+    origin: ["http://localhost:5173"], 
+    methods: ["GET", "POST"], 
+    credentials: true
+}));
 
 //Create account
 app.post('/register', (req, res) => {
@@ -41,8 +62,8 @@ app.post('/register', (req, res) => {
                 }
                 else { //if not taken store in database
                     db.query(
-                        "INSERT INTO users (username, password) VALUES (?, ?)",
-                        [username, password], 
+                        "INSERT INTO users (username, password, chash) VALUES (?, ?, ?)",
+                        [username, password, 100000], 
                         (err) => {
                             res.send(err);
                         }
@@ -66,8 +87,9 @@ app.post('/login', (req, res) => {
                 res.send(err);
             }
             if (result) {
-                console.log(result);
                 if (result.length == 1) {
+                    req.session.user = result;
+                    console.log(req.session.user);
                     res.send(result);
                 }
                 else {
@@ -77,6 +99,14 @@ app.post('/login', (req, res) => {
         }
     );
 });
+
+app.get("/login", (req, res) => {
+    if (req.session.user) {
+        res.send({loggedIn: true, user: req.session.user})
+    } else {
+        res.send({loggedIn: false})
+    }
+})
 
 //delete user by a given id
 app.post('/delete_user', (req, res) => {
@@ -93,6 +123,21 @@ app.post('/delete_user', (req, res) => {
         }
     );
 });
+
+app.post('/get_user', (req, res) => {
+    const userId = req.body.userId;
+
+    db.query(
+        "SELECT * FROM users WHERE id = ?", 
+        [userId], 
+        (err, result) => {
+            if (err) {
+                res.send(err);
+            }
+            res.send(result.data[0]);
+        }
+    )
+})
 
 
 app.listen('3000', () => {

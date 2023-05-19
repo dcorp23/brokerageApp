@@ -26,7 +26,7 @@ export const getAllStocks = async () => {
     }
 }
 
-export const getStockInfo = async (symbol) => {
+export const getStockCurrentPrice = async (symbol) => {
     const options = {
     method: 'GET',
     url: 'https://twelve-data1.p.rapidapi.com/price',
@@ -48,4 +48,29 @@ export const getStockInfo = async (symbol) => {
     } catch (error) {
         console.error(error);
     }
+}
+
+export const getStockQuote = async (symbol) => {
+    const options = {
+        method: 'GET',
+        url: 'https://twelve-data1.p.rapidapi.com/quote',
+        params: {
+          symbol: symbol,
+          interval: '1day',
+          outputsize: '30',
+          format: 'json'
+        },
+        headers: {
+          'X-RapidAPI-Key': '4d422dfb74mshcea6b8b5e469e9ap13ad43jsn1cf17005f97f',
+          'X-RapidAPI-Host': 'twelve-data1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+          const response = await axios.request(options);
+          console.log(response.data);
+          return response.data;
+      } catch (error) {
+          console.error(error);
+      }
 }

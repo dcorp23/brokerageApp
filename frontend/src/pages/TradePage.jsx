@@ -5,6 +5,7 @@ export const TradePage = () => {
         <div className="TradePage">
             <Navbar />
             <p>This is the Trade page</p>
+            <p></p>
         </div>
     );
 }

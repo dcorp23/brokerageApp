@@ -1,13 +1,14 @@
 import React, { useState, useContext } from "react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 import { UserContext } from "../App";
 
 export const Login = () => {
     const [loginUsername, setLoginUsername] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [loginResponse, setLoginResponse] = useState("");
-    const {userId, setUserId, username, setUsername} = useContext(UserContext);
+    const {loginStatus, setLoginStatus} = useContext(UserContext);
     let navigate = useNavigate();
 
     const login = () => {
@@ -16,9 +17,8 @@ export const Login = () => {
             password: loginPassword
         }).then((response) => {
             if (response.data[0]) {
-                setUserId(response.data[0].id);
-                setUsername(response.data[0].username);
                 setLoginResponse(response.data[0].id);
+                setLoginStatus(response.data[0].id);
                 navigate("/Portfolio");
             }
             else {

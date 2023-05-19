@@ -3,19 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 
 export const Navbar = () => {
-    const {userId, setUserId, username, setUsername} = useContext(UserContext);
+    const {loginStatus} = useContext(UserContext);
     let navigate = useNavigate();
 
     const logout = () => {
-        setUserId(null);
-        setUsername("");
-        navigate("/");
     };
 
     return (
     <div className="Navbar">
         <p>This is the Navbar</p>
-        <p>Welcome {username}</p>
+        <p>Welcome {loginStatus}</p>
         <br/>
         <button onClick={() => {
             navigate("/Portfolio");
