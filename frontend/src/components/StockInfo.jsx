@@ -1,21 +1,32 @@
 import { useState, useEffect } from "react";
-import { getStockCurrentPrice, getStockQuote } from "../../../backend/StockApi";
+import axios from "axios";
 
 
 export const StockInfo = (props) => {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [quote, setQuote] = useState(null);
 
+    const updateStockPick = () => {
+        axios.post("http://localhost:3000/stock_api/price", {
+            symbol: props.symbol,
+        }).then((response) => {
+            console.log(response);
+            setCurrentPrice(response.data.price);
+        });
+
+        axios.post("http://localhost:3000/stock_api/quote", {
+            symbol: props.symbol,
+        }).then((response) => {
+            console.log(response);
+            setQuote(response.data);
+        });
+    }
+
     useEffect(() => {
-        if (props.symbol) {
-            getStockCurrentPrice(props.symbol).then((result) => {
-                setCurrentPrice(result.price);
-            });
-            getStockQuote(props.symbol).then((result) => {
-                setQuote(result);
-            });
-        }
+        updateStockPick();
     }, [props.symbol])
+
+    console.log(currentPrice);
 
     return (
         <div className="StockInfo">
@@ -28,7 +39,7 @@ export const StockInfo = (props) => {
                 <h3>Past 30 Day info</h3>
                 <p>High: {quote ? quote.high : "No Stock Selected"}</p>
                 <p>Low: {quote ? quote.low : "No Stock Selected"}</p>
-                <p>Percent Change: {quote ? quote.percent_chage : "No Stock Selected"}</p>
+                <p>Percent Change: {quote ? quote.percent_change : "No Stock Selected"}</p>
                 <p>Average Volume: {quote ? quote.average_volume : "No Stock Selected"}</p>
             </div>
         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import Axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { UserContext } from "../App";
@@ -12,7 +12,7 @@ export const Login = () => {
     let navigate = useNavigate();
 
     const login = () => {
-        Axios.post("http://localhost:3000/login", {
+        axios.post("http://localhost:3000/login", {
             username: loginUsername,
             password: loginPassword
         }).then((response) => {
@@ -26,6 +26,12 @@ export const Login = () => {
             }
         });
     };
+
+    useEffect(() => {
+        if (loginStatus) {
+            navigate("/Portfolio");
+        }
+    }, []);
   
     return (
     <div className="input_card">

@@ -1,5 +1,4 @@
 import axios from "axios";
-import fs from "fs";
 
 const APIKEY = '4d422dfb74mshcea6b8b5e469e9ap13ad43jsn1cf17005f97f';
 

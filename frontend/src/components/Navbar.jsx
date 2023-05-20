@@ -1,12 +1,18 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
+import axios from "axios";
 
 export const Navbar = () => {
-    const {loginStatus} = useContext(UserContext);
+    const {loginStatus, setLoginStatus} = useContext(UserContext);
     let navigate = useNavigate();
 
     const logout = () => {
+        axios.get("http://localhost:3000/logout").then((response) => {
+            console.log("logged out");
+          })
+        setLoginStatus(0);
+        navigate("/");
     };
 
     return (

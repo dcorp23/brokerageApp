@@ -6,6 +6,8 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 
+import { getStockCurrentPrice, getStockQuote } from "./StockApi.js";
+
 const db = createConnection({
     host : 'localhost', 
     user : 'root', 
@@ -62,7 +64,7 @@ app.post('/register', (req, res) => {
                 }
                 else { //if not taken store in database
                     db.query(
-                        "INSERT INTO users (username, password, chash) VALUES (?, ?, ?)",
+                        "INSERT INTO users (username, password, cash) VALUES (?, ?, ?)",
                         [username, password, 100000], 
                         (err) => {
                             res.send(err);
@@ -74,6 +76,7 @@ app.post('/register', (req, res) => {
     );
 });
 
+//Login
 app.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -89,7 +92,6 @@ app.post('/login', (req, res) => {
             if (result) {
                 if (result.length == 1) {
                     req.session.user = result;
-                    console.log(req.session.user);
                     res.send(result);
                 }
                 else {
@@ -100,12 +102,19 @@ app.post('/login', (req, res) => {
     );
 });
 
+//check if logged in
 app.get("/login", (req, res) => {
     if (req.session.user) {
         res.send({loggedIn: true, user: req.session.user})
     } else {
         res.send({loggedIn: false})
     }
+})
+
+app.get("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        res.redirect("/");
+    });
 })
 
 //delete user by a given id
@@ -124,21 +133,40 @@ app.post('/delete_user', (req, res) => {
     );
 });
 
-app.post('/get_user', (req, res) => {
+//get portfolio list
+app.post('/portfolio', (req, res) => {
     const userId = req.body.userId;
 
     db.query(
-        "SELECT * FROM users WHERE id = ?", 
+        "SELECT * FROM trades WHERE user_id = ?", 
         [userId], 
         (err, result) => {
             if (err) {
                 res.send(err);
             }
-            res.send(result.data[0]);
+            res.send(result);
         }
     )
-})
+});
 
+//get stock price
+app.post('/stock_api/price', (req, res) => {
+    const symbol = req.body.symbol;
+    getStockCurrentPrice(symbol).then((result) => {
+        const data = result;
+        res.send(data);
+    });
+});
+
+//get stock quote
+app.post('/stock_api/quote', (req, res) => {
+    const symbol = req.body.symbol;
+    getStockQuote(symbol).then((result) => {
+        const data = result;
+        res.send(data);
+    });
+    
+})
 
 app.listen('3000', () => {
     console.log('Serever started on port 3000');

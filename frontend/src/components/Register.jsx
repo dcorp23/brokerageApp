@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Axios from "axios";
+import axios from "axios";
 
 export const Register = () => {
     const [regUsername, setRegUsername] = useState("");
@@ -7,7 +7,7 @@ export const Register = () => {
     const [regResponse, setRegResponse] = useState("");
 
     const register = () => {
-        Axios.post("http://localhost:3000/register", {
+        axios.post("http://localhost:3000/register", {
             username: regUsername,
             password: regPassword
         }).then((response) => {
