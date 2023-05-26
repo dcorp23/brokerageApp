@@ -133,8 +133,8 @@ app.post('/delete_user', (req, res) => {
     );
 });
 
-//get portfolio list
-app.post('/portfolio', (req, res) => {
+//get trade history list
+app.post('/history', (req, res) => {
     const userId = req.body.userId;
 
     db.query(
@@ -148,6 +148,110 @@ app.post('/portfolio', (req, res) => {
         }
     )
 });
+
+app.post('/get_cash', (req, res) => {
+    const userId = req.body.userId;
+
+    db.query(
+        "SELECT * FROM users WHERE id = ?", 
+        [userId], 
+        (err, result) => {
+            if (err) {
+                res.send(err);
+            }
+            res.send(result);
+        }
+    )
+})
+
+app.post('/active_positions', (req, res) => {
+    const userId = req.body.userId;
+
+    db.query(
+        "SELECT * FROM active_positions WHERE user_id = ?", 
+        [userId], 
+        (err, result) => {
+            if (err) {
+                res.send(err);
+            }
+            res.send(result);
+        }
+    )
+});
+
+app.post('/buy', (req, res) => {
+    const ticker = req.body.tickerSymbol;
+    const shares = req.body.shares;
+    const amount = req.body.amount;
+    const userId = req.body.userId;
+    const userCash = req.body.userCash;
+    const stockPrice = req.body.stockPrice;
+
+    var date = new Date();
+    var dateStr =
+    date.getFullYear() + "-" + 
+    ("00" + (date.getMonth() + 1)).slice(-2) + "-" +
+    ("00" + date.getDate()).slice(-2) + " " +
+    ("00" + date.getHours()).slice(-2) + ":" +
+    ("00" + date.getMinutes()).slice(-2) + ":" +
+    ("00" + date.getSeconds()).slice(-2);
+
+
+    if (shares) {
+        if (amount * stockPrice > userCash) {
+            res.send({message: "not enough money"});
+        }
+    }
+    else {
+        if (amount > userCash) {
+            res.send({message: "not enough money"});
+        }
+    }
+
+    db.query(
+        "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
+        "VALUES (?, ?, ?, ?, ?, true)",  
+        [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/stockPrice))], 
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(result);
+        }
+    );
+
+    db.query(
+        "INSERT INTO active_positions (ticker_symbol, user_id, shares) VALUES (?, ?, ?)" + 
+        "ON DUPLICATE KEY UPDATE shares = shares + ?",  
+        [ticker, userId, (shares ? amount : (amount/stockPrice)), (shares ? amount : (amount/stockPrice))], 
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(result);
+        }
+    );
+
+    res.send({message: "Trade Complete"});
+});
+
+app.post('/sell', (req, res) => {
+    const ticker = req.body.tickerSymbol;
+    const shares = req.body.shares;
+    const amount = req.body.amount;
+
+    db.query(
+        "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
+        "VALUES (?, ?, ?, ?, ?, false)", 
+        [ticker, (shares ? (amount*price) : amount), date, userId, (shares ? amount : (amount/price))], 
+        (err, result) => {
+            if (err) {
+                res.send(err);
+            }
+            res.send(result);
+        }
+    )
+})
 
 //get stock price
 app.post('/stock_api/price', (req, res) => {

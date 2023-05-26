@@ -2,16 +2,16 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import axios from "axios"
 
-export const Portfolio = () => {
+export const History = () => {
     const {loginStatus} = useContext(UserContext);
-    const [portfolioArray, setPortfolioArray] = useState([]);
+    const [historyArray, sethistoryArray] = useState([]);
 
     useEffect(() => {
-        axios.post("http://localhost:3000/active_positions", {
+        axios.post("http://localhost:3000/history", {
             userId : loginStatus
         }).then((response) => {
             if (response.data.length) {
-                setPortfolioArray(response.data);
+                sethistoryArray(response.data);
             }
             else {
                 console.log(response);
@@ -20,13 +20,15 @@ export const Portfolio = () => {
     }, []);
 
     return (
-        <div className="Portfolio">
+        <div className="History">
             <p>Mapping the array</p>
             <ul>
-                {portfolioArray.map((object, key) => {
-                    return <li key={key}>{object.ticker_symbol} {object.shares}</li>
+                {historyArray.map((object, key) => {
+                    return <li key={key}>{object.ticker_symbol} {object.cost_basis} {object.shares} {object.date} {object.buy ? "Bought" : "Sold"}</li>
                 })}
             </ul>
         </div>
     )
 }
+
+export default History;
