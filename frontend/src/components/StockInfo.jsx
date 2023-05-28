@@ -23,7 +23,9 @@ export const StockInfo = (props) => {
     }
 
     useEffect(() => {
-        updateStockPick();
+        if (props.symbol) {
+            updateStockPick();
+        }
     }, [props.symbol])
 
     console.log(currentPrice);

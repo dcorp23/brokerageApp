@@ -14,9 +14,13 @@ export const Trade = (props) => {
     const {loginStatus} = useContext(UserContext);
 
     const sendBuyRequest = () => {
+        if (amount <= 0) {
+            setTradeResponse("Invalid amount");
+            return;
+        }
         var goodSymbol = false;
         //check if the ticker symbol is correct
-        stocks.forEach(stock => {
+        stocks.every(stock => {
             if (stock.symbol == tickerSymbol.toUpperCase()) {
                 goodSymbol = true;
                 axios.post("http://localhost:3000/stock_api/price", {
@@ -34,10 +38,12 @@ export const Trade = (props) => {
                         userCash: userCash, 
                         stockPrice: stockPrice
                     }).then((response) => {
-                        setTradeResponse("Trade Complete");
+                        setTradeResponse("Buy Complete");
                     });
                 });
-            }
+                return false;
+            };
+            return true;
         });
         if (!goodSymbol) {
             setTradeResponse("Ticker Symbol Not Found");
@@ -45,7 +51,40 @@ export const Trade = (props) => {
     };
 
     const sendSellRequest = () => {
-        
+        console.log("selling stuff");
+        if (amount <= 0) {
+            setTradeResponse("Invalid amount");
+            return;
+        }
+        var goodSymbol = false;
+        //check if the ticker symbol is correct
+        stocks.every(stock => {
+            if (stock.symbol == tickerSymbol.toUpperCase()) {
+                goodSymbol = true;
+                axios.post("http://localhost:3000/stock_api/price", {
+                    symbol: tickerSymbol
+                }).then((response) => {
+                    let stockPrice = parseFloat(response.data.price);
+                    console.log(stockPrice);
+                    console.log(loginStatus);
+
+                    axios.post("http://localhost:3000/sell", {
+                        tickerSymbol: tickerSymbol, 
+                        shares: shares, 
+                        amount: amount, 
+                        userId: loginStatus, 
+                        stockPrice: stockPrice
+                    }).then((response) => {
+                        setTradeResponse(response.data.message);
+                    });
+                });
+                return false;
+            }
+            return true;
+        });
+        if (!goodSymbol) {
+            setTradeResponse("Ticker Symbol Not Found");
+        }
     }
 
     useEffect(() => {
@@ -54,7 +93,7 @@ export const Trade = (props) => {
         axios.post("http://localhost:3000/get_cash", {
             userId: loginStatus
         }).then((response) => {
-            setUserCash(response.data.cash);
+            setUserCash(response.data[0].cash);
         });
     }, []);
 

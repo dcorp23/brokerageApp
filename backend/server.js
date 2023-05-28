@@ -113,7 +113,7 @@ app.get("/login", (req, res) => {
 
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
-        res.redirect("/");
+        res.send({message: "Logged Out"});
     });
 })
 
@@ -162,7 +162,7 @@ app.post('/get_cash', (req, res) => {
             res.send(result);
         }
     )
-})
+});
 
 app.post('/active_positions', (req, res) => {
     const userId = req.body.userId;
@@ -196,7 +196,6 @@ app.post('/buy', (req, res) => {
     ("00" + date.getMinutes()).slice(-2) + ":" +
     ("00" + date.getSeconds()).slice(-2);
 
-
     if (shares) {
         if (amount * stockPrice > userCash) {
             res.send({message: "not enough money"});
@@ -215,8 +214,9 @@ app.post('/buy', (req, res) => {
         (err, result) => {
             if (err) {
                 console.log(err);
+            } else {
+                console.log(result);
             }
-            console.log(result);
         }
     );
 
@@ -227,8 +227,21 @@ app.post('/buy', (req, res) => {
         (err, result) => {
             if (err) {
                 console.log(err);
+            } else {
+                console.log(result);
             }
-            console.log(result);
+        }
+    );
+
+    db.query(
+        "UPDATE users SET cash=(cash - ?) WHERE id = ?", 
+        [((!shares) ? amount : (amount*stockPrice)), userId], 
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(result);
+            }
         }
     );
 
@@ -239,18 +252,89 @@ app.post('/sell', (req, res) => {
     const ticker = req.body.tickerSymbol;
     const shares = req.body.shares;
     const amount = req.body.amount;
+    const userId = req.body.userId;
+    const stockPrice = req.body.stockPrice;
 
+    var date = new Date();
+    var dateStr =
+    date.getFullYear() + "-" + 
+    ("00" + (date.getMonth() + 1)).slice(-2) + "-" +
+    ("00" + date.getDate()).slice(-2) + " " +
+    ("00" + date.getHours()).slice(-2) + ":" +
+    ("00" + date.getMinutes()).slice(-2) + ":" +
+    ("00" + date.getSeconds()).slice(-2);
+
+    //check if the person has the shares to sell
+    var userShares;
     db.query(
-        "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
-        "VALUES (?, ?, ?, ?, ?, false)", 
-        [ticker, (shares ? (amount*price) : amount), date, userId, (shares ? amount : (amount/price))], 
+        "SELECT * FROM active_positions WHERE user_id = ? AND ticker_symbol = ?",
+        [userId, ticker], 
         (err, result) => {
             if (err) {
-                res.send(err);
+                console.log(err);
             }
-            res.send(result);
+            if (result.length === 0) {
+                res.send({message: "You don't have any " + ticker});
+            } else {
+                userShares = result[0].shares;
+                if ((shares ? amount : (amount/price)) > userShares) {
+                    res.send({message: "You don't have enough shares"});
+                }
+                else {
+                    //insert into trade history
+                    db.query(
+                        "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
+                        "VALUES (?, ?, ?, ?, ?, false)", 
+                        [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/price))], 
+                        (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(result);
+                        }
+                    );
+                
+                    //subtract shares from active_positions
+                    db.query(
+                        "UPDATE active_positions SET shares=(shares-?) WHERE user_id = ? AND ticker_symbol = ?",  
+                        [(shares ? amount : (amount/price)), userId, ticker], 
+                        (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(result);
+                        }
+                    );
+                
+                    //delete position if the user has no shares
+                    db.query(
+                        "DELETE FROM active_positions WHERE user_id = ? AND shares <= 0", 
+                        [userId], 
+                        (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(result);
+                        }
+                    );
+                
+                    //add cash to account
+                    db.query(
+                        "UPDATE users SET cash=(cash + ?) WHERE id = ?", 
+                        [((!shares) ? amount : (amount*stockPrice)), userId], 
+                        (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log(result);
+                                res.send({message: "Trade Complete"});
+                            }
+                        }
+                    );
+                }
+            }
         }
-    )
+    );
 })
 
 //get stock price
