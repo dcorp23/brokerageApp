@@ -21,8 +21,6 @@ function App() {
     axios.get("http://localhost:3000/login").then((response) => {
       if (response.data.loggedIn) {
         setLoginStatus(response.data.user[0].id);
-      } else {
-        console.log("Not logged In");
       }
       setLoading(false);
     })

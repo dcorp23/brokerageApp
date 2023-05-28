@@ -149,7 +149,7 @@ app.post('/history', (req, res) => {
     )
 });
 
-app.post('/get_cash', (req, res) => {
+app.post('/get_user', (req, res) => {
     const userId = req.body.userId;
 
     db.query(

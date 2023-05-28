@@ -1,0 +1,14 @@
+.Navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(4, 38, 137, 0.816);
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    padding: 1em;
+}
+
+.button {
+    margin-right: 10px;
+}

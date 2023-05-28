@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import LoginCSS from "./componentCSS/Login.module.css";
 
 import { UserContext } from "../App";
 
@@ -34,12 +35,16 @@ export const Login = () => {
     }, []);
   
     return (
-    <div className="input_card">
+    <div className={LoginCSS.input_form}>
         <h1>Login</h1>
-        <label>Username</label>
-        <input type="text" onChange={(input) => {setLoginUsername(input.target.value);}}></input>
-        <label>Password</label>
-        <input type="password" onChange={(input) => {setLoginPassword(input.target.value);}}></input>
+        <div className={LoginCSS.form_group}>
+            <label>Username</label>
+            <input type="text" onChange={(input) => {setLoginUsername(input.target.value);}}></input>
+        </div>
+        <div className={LoginCSS.form_group}>
+            <label>Password</label>
+            <input type="password" onChange={(input) => {setLoginPassword(input.target.value);}}></input>
+        </div>
         <button onClick={login}>Login</button>
         <p>{loginResponse}</p>
     </div>

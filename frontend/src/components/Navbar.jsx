@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
+import NavbarCSS from "./componentCSS/Navbar.module.css"
 import axios from "axios";
 
 export const Navbar = () => {
     const {loginStatus, setLoginStatus} = useContext(UserContext);
+    const [username, setUsername] = useState("");
     let navigate = useNavigate();
 
     const logout = () => {
@@ -15,11 +17,17 @@ export const Navbar = () => {
         navigate("/");
     };
 
+    useEffect(() => {
+        axios.post("http://localhost:3000/get_user", {
+            userId: loginStatus
+        }).then((response) => {
+            setUsername(response.data[0].username);
+        });
+    }, []);
+
     return (
-    <div className="Navbar">
-        <p>This is the Navbar</p>
-        <p>Welcome {loginStatus}</p>
-        <br/>
+    <div className={NavbarCSS.Navbar}>
+        <p>Welcome {username}</p>
         <button onClick={() => {
             navigate("/Portfolio");
         }}>Portfolio</button>

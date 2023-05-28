@@ -11,12 +11,12 @@ export const PortfolioPage = () => {
     const {loginStatus} = useContext(UserContext);
 
     useEffect(() => {
-        axios.post("http://localhost:3000/get_cash", {
+        axios.post("http://localhost:3000/get_user", {
             userId: loginStatus
         }).then((response) => {
             setUserCash(response.data[0].cash);
         });
-    })
+    }, []);
 
     return (
     <div className="PortfolioPage">
