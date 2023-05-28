@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 export const StockInfo = (props) => {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [quote, setQuote] = useState(null);
+
+    const navigate = useNavigate();
 
     const updateStockPick = () => {
         axios.post("http://localhost:3000/stock_api/price", {
@@ -44,6 +47,11 @@ export const StockInfo = (props) => {
                 <p>Percent Change: {quote ? quote.percent_change : "No Stock Selected"}</p>
                 <p>Average Volume: {quote ? quote.average_volume : "No Stock Selected"}</p>
             </div>
+            <button disabled={!(props.symbol)} onClick={() => {
+                        navigate("/Trade", {state: {ticker: props.symbol, buy:true}})
+                    }}>
+                    {props.symbol ? "Buy " + props.symbol : "Select a Stock"}
+            </button>
         </div>
     )
 }

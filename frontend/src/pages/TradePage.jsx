@@ -1,12 +1,15 @@
+import { useLocation } from "react-router-dom";
 import {Navbar} from "../components/Navbar";
 import {Trade} from "../components/Trade";
 
-export const TradePage = () => {
+export const TradePage = ({route}) => {
+    const location = useLocation();
+
     return (
         <div className="TradePage">
             <Navbar />
-            <p>This is the Trade page</p>
-            <Trade />
+            <p>{route}</p>
+            <Trade ticker={location.state.ticker} buy={location.state.buy}/>
         </div>
     );
 }

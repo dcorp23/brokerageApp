@@ -27,7 +27,7 @@ export const Navbar = () => {
             navigate("/Stocksearch");
         }}>Search Stocks</button>
         <button onClick={() => {
-            navigate("/Trade");
+            navigate("/Trade", {state: {ticker:"", buy:true}});
         }}>Trade</button>
         <button onClick={logout}>Logout</button>
     </div>

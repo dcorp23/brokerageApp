@@ -4,8 +4,8 @@ import { UserContext } from "../App";
 import StocksList from "../components/StocksList"
 
 export const Trade = (props) => {
-    const [tickerSymbol, setTickerSymbol] = useState("");
-    const [buy, setBuy] = useState(true);
+    const [tickerSymbol, setTickerSymbol] = useState(props.ticker);
+    const [buy, setBuy] = useState(props.buy);
     const [shares, setShares] = useState(true);
     const [amount, setAmount] = useState(0);
     const [tradeResponse, setTradeResponse] = useState("");
@@ -13,6 +13,7 @@ export const Trade = (props) => {
     const [userCash, setUserCash] = useState(0);
     const {loginStatus} = useContext(UserContext);
 
+    
     const sendBuyRequest = () => {
         if (amount <= 0) {
             setTradeResponse("Invalid amount");
@@ -100,7 +101,7 @@ export const Trade = (props) => {
     return <div className="Trade">
         <p>Trade</p>
         <label>Ticker Symbol</label>
-        <input type="text" onChange={(input) => {setTickerSymbol(input.target.value.toUpperCase())}}></input>
+        <input type="text" value={tickerSymbol} onChange={(input) => {setTickerSymbol(input.target.value.toUpperCase())}}></input>
         <label>Stock or Cash</label>
         <select value={shares ? "Shares" : "Cash"} onChange={(event) => setShares(event.target.value === "Shares" ? true : false)}>
             <option value="Shares">Shares</option>
