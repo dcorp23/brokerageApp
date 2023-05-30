@@ -76,7 +76,7 @@ app.post('/register', (req, res) => {
     );
 });
 
-//Login
+//Login creates cookies
 app.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -102,7 +102,7 @@ app.post('/login', (req, res) => {
     );
 });
 
-//check if logged in
+//check if logged in with cookies
 app.get("/login", (req, res) => {
     if (req.session.user) {
         res.send({loggedIn: true, user: req.session.user})
@@ -111,6 +111,7 @@ app.get("/login", (req, res) => {
     }
 })
 
+//logout of account destroys cookies
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         res.send({message: "Logged Out"});
@@ -149,6 +150,7 @@ app.post('/history', (req, res) => {
     )
 });
 
+//get users information
 app.post('/get_user', (req, res) => {
     const userId = req.body.userId;
 
@@ -196,56 +198,55 @@ app.post('/buy', (req, res) => {
     ("00" + date.getMinutes()).slice(-2) + ":" +
     ("00" + date.getSeconds()).slice(-2);
 
-    if (shares) {
-        if (amount * stockPrice > userCash) {
-            res.send({message: "not enough money"});
-        }
+    console.log(shares ? ((amount * stockPrice) > userCash) : (amount > userCash));
+
+    //check if the user has enough money
+    if (shares ? ((amount * stockPrice) > userCash) : (amount > userCash)) {
+        res.send({message: "Insufficient Funds"});
     }
     else {
-        if (amount > userCash) {
-            res.send({message: "not enough money"});
-        }
+        db.query(
+            "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
+            "VALUES (?, ?, ?, ?, ?, true)",  
+            [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/stockPrice))], 
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(result);
+                }
+            }
+        );
+
+        //insert into active positions or add to shares
+        db.query(
+            "INSERT INTO active_positions (ticker_symbol, user_id, shares) VALUES (?, ?, ?)" + 
+            "ON DUPLICATE KEY UPDATE shares = shares + ?",  
+            [ticker, userId, (shares ? amount : (amount/stockPrice)), (shares ? amount : (amount/stockPrice))], 
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(result);
+                }
+            }
+        );
+
+        //subtract money from account
+        db.query(
+            "UPDATE users SET cash=(cash - ?) WHERE id = ?", 
+            [((!shares) ? amount : (amount*stockPrice)), userId], 
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(result);
+                }
+            }
+        );
+    
+        res.send({message: "Buy Complete"});
     }
-
-    db.query(
-        "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
-        "VALUES (?, ?, ?, ?, ?, true)",  
-        [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/stockPrice))], 
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(result);
-            }
-        }
-    );
-
-    db.query(
-        "INSERT INTO active_positions (ticker_symbol, user_id, shares) VALUES (?, ?, ?)" + 
-        "ON DUPLICATE KEY UPDATE shares = shares + ?",  
-        [ticker, userId, (shares ? amount : (amount/stockPrice)), (shares ? amount : (amount/stockPrice))], 
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(result);
-            }
-        }
-    );
-
-    db.query(
-        "UPDATE users SET cash=(cash - ?) WHERE id = ?", 
-        [((!shares) ? amount : (amount*stockPrice)), userId], 
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(result);
-            }
-        }
-    );
-
-    res.send({message: "Trade Complete"});
 });
 
 app.post('/sell', (req, res) => {
@@ -277,15 +278,15 @@ app.post('/sell', (req, res) => {
                 res.send({message: "You don't have any " + ticker});
             } else {
                 userShares = result[0].shares;
-                if ((shares ? amount : (amount/price)) > userShares) {
-                    res.send({message: "You don't have enough shares"});
+                if ((shares ? amount : (amount/stockPrice)) > userShares) {
+                    res.send({message: "Insufficient shares"});
                 }
                 else {
                     //insert into trade history
                     db.query(
                         "INSERT INTO trades (ticker_symbol, cost_basis, date, user_id, shares, buy)" + 
                         "VALUES (?, ?, ?, ?, ?, false)", 
-                        [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/price))], 
+                        [ticker, stockPrice, dateStr, userId, (shares ? amount : (amount/stockPrice))], 
                         (err, result) => {
                             if (err) {
                                 console.log(err);
@@ -297,7 +298,7 @@ app.post('/sell', (req, res) => {
                     //subtract shares from active_positions
                     db.query(
                         "UPDATE active_positions SET shares=(shares-?) WHERE user_id = ? AND ticker_symbol = ?",  
-                        [(shares ? amount : (amount/price)), userId, ticker], 
+                        [(shares ? amount : (amount/stockPrice)), userId, ticker], 
                         (err, result) => {
                             if (err) {
                                 console.log(err);
@@ -327,7 +328,7 @@ app.post('/sell', (req, res) => {
                                 console.log(err);
                             } else {
                                 console.log(result);
-                                res.send({message: "Trade Complete"});
+                                res.send({message: "Sell Complete"});
                             }
                         }
                     );

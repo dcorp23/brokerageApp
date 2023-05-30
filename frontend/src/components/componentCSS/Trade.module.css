@@ -1,4 +1,4 @@
-.input_form {
+.Trade {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,39 +7,44 @@
     background-color: #f8f8f8;
   }
   
-.input_form {
+.Trade {
     width: 300px;
     padding: 20px;
+    margin-top: 6rem;
     border-radius: 10px;
     background-color: #161616;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.input_form h1 {
+.Trade h1 {
     color: royalblue;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.input_form .form_group {
-    margin-bottom: 20px;
+.Trade select{
+    width: 100%;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
 }
 
-.input_form label {
+.Trade label {
     color: royalblue;
     display: block;
     font-weight: bold;
 }
 
-.input_form input[type="text"],
-.input_form input[type="password"] {
+.Trade input[type="text"],
+.Trade input[type="number"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-.input_form button {
+.Trade button {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -49,10 +54,6 @@
     cursor: pointer;
 }
 
-.input_form button:hover {
+.Trade button:hover {
     background-color: #0056b3;
-}
-
-.switch_page {
-    margin-top: 10px;
 }

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import StocksList from "../components/StocksList"
+import SearchbarCSS from "./componentCSS/Searchbar.module.css";
+
 
 function stockFilter(stock, searchQuery) {
     return (stock.symbol.toLowerCase().includes(searchQuery) || 
@@ -17,6 +19,7 @@ function getFilteredStocks (searchQuery, stocks) {
 export const SearchBar = (props) => {
     const [stocks, setStocks] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchFocused, setSearchFocused] = useState(false);
 
     useEffect(() => {
         setStocks(StocksList);
@@ -25,12 +28,12 @@ export const SearchBar = (props) => {
     const filteredStocks = getFilteredStocks(searchQuery, stocks).slice(0, 6);
 
     return(
-    <div className="SearchBar">
-        <label>Search for Stocks</label>
-        <input type="text" onChange={(input) => {setSearchQuery(input.target.value)}}></input>
-        <ul>
-            {filteredStocks.map(stock => <button key={stock.symbol} onClick={() => props.setSymbol(stock.symbol)}>
-                {stock.symbol} {stock.name}
+    <div className={SearchbarCSS.Searchbar}>
+        <input type="text" onChange={(input) => {setSearchQuery(input.target.value)}} placeholder="Search For Stocks..."
+                onFocus={() => {setSearchFocused(true)}} onBlur={() => {setSearchFocused(false)}}></input>
+        <ul hidden={!searchFocused}>
+            {filteredStocks.map(stock => <button key={stock.symbol} onMouseDown={() => {props.setSymbol(stock.symbol);}}>
+                {stock.symbol} : {stock.name}
             </button>)}
         </ul>
     </div>

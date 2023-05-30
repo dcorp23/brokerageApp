@@ -7,9 +7,8 @@ export const StockSearchPage = () => {
     const [currentStockSymbol, setCurrentStockSymbol] = useState(null);
 
     return (
-        <div className="StockSearchPage">
+        <div className="StockSearchPage" >
             <Navbar />
-            <p>This is the Stock Search page</p>
             <SearchBar setSymbol={setCurrentStockSymbol}/>
             <StockInfo symbol={currentStockSymbol}/>
         </div>

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useState, useContext, useEffect } from "react"
 import { UserContext } from "../App";
-import StocksList from "../components/StocksList"
+import StocksList from "../components/StocksList";
+import TradeCSS from "./componentCSS/Trade.module.css";
 
 export const Trade = (props) => {
     const [tickerSymbol, setTickerSymbol] = useState(props.ticker);
@@ -28,8 +29,6 @@ export const Trade = (props) => {
                     symbol: tickerSymbol
                 }).then((response) => {
                     let stockPrice = parseFloat(response.data.price);
-                    console.log(stockPrice);
-                    console.log(loginStatus);
 
                     axios.post("http://localhost:3000/buy", {
                         tickerSymbol: tickerSymbol, 
@@ -39,7 +38,7 @@ export const Trade = (props) => {
                         userCash: userCash, 
                         stockPrice: stockPrice
                     }).then((response) => {
-                        setTradeResponse("Buy Complete");
+                        setTradeResponse(response.data.message);
                     });
                 });
                 return false;
@@ -52,7 +51,6 @@ export const Trade = (props) => {
     };
 
     const sendSellRequest = () => {
-        console.log("selling stuff");
         if (amount <= 0) {
             setTradeResponse("Invalid amount");
             return;
@@ -66,8 +64,6 @@ export const Trade = (props) => {
                     symbol: tickerSymbol
                 }).then((response) => {
                     let stockPrice = parseFloat(response.data.price);
-                    console.log(stockPrice);
-                    console.log(loginStatus);
 
                     axios.post("http://localhost:3000/sell", {
                         tickerSymbol: tickerSymbol, 
@@ -91,15 +87,14 @@ export const Trade = (props) => {
     useEffect(() => {
         //get stockList and usersCash
         setStocks(StocksList);
-        axios.post("http://localhost:3000/get_cash", {
+        axios.post("http://localhost:3000/get_user", {
             userId: loginStatus
         }).then((response) => {
             setUserCash(response.data[0].cash);
         });
     }, []);
 
-    return <div className="Trade">
-        <p>Trade</p>
+    return <div className={TradeCSS.Trade}>
         <label>Ticker Symbol</label>
         <input type="text" value={tickerSymbol} onChange={(input) => {setTickerSymbol(input.target.value.toUpperCase())}}></input>
         <label>Stock or Cash</label>

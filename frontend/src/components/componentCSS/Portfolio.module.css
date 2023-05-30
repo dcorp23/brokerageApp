@@ -1,0 +1,85 @@
+.Portfolio {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    background-color: #f8f8f8;
+  }
+  
+.Portfolio {
+    width: 33rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #161616;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.Portfolio ul {
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    top: 0;
+}
+
+.Portfolio li {
+    text-align: left;
+    font-size: 17;
+    padding: 5px 10px;
+    background-color: #211b30;
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+.Portfolio button {
+    margin-left: 20px;
+    background-color: #00438b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.PageButtons button {
+    width: 80px;
+    padding: 10px;
+    margin: 0;
+    background-color: #004fa3;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.PageButtons button:disabled {
+    background-color: #131313;
+    color: #131313;
+}
+
+.PageButtons .Portfolio button:hover {
+    background-color: #0056b3;
+}
+
+#PageLeft {
+    position: absolute;
+    left: 12rem;
+    bottom: 1rem;
+}
+
+#PageRight {
+    position: absolute;
+    right: 12rem;
+    bottom: 1rem;
+}
+
+#SwitchButton {
+    margin-top: 4rem;
+    margin-left: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

@@ -11,7 +11,7 @@ export const Navbar = () => {
 
     const logout = () => {
         axios.get("http://localhost:3000/logout").then((response) => {
-            console.log("logged out");
+            console.log(response);
           })
         setLoginStatus(0);
         navigate("/");
@@ -27,7 +27,7 @@ export const Navbar = () => {
 
     return (
     <div className={NavbarCSS.Navbar}>
-        <p>Welcome {username}</p>
+        <h2>Welcome {username}</h2>
         <button onClick={() => {
             navigate("/Portfolio");
         }}>Portfolio</button>

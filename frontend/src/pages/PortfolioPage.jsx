@@ -4,6 +4,7 @@ import { Portfolio } from "../components/Portfolio";
 import { History } from "../components/History";
 import { UserContext } from "../App";
 import axios from "axios";
+import PortfolioCSS from "../components/componentCSS/Portfolio.module.css";
 
 export const PortfolioPage = () => {
     const [showActivePositions, setShowActivePositions] = useState(true);
@@ -21,9 +22,8 @@ export const PortfolioPage = () => {
     return (
     <div className="PortfolioPage">
         <Navbar />
-        <p>This is the Portfolio page</p>
         <p>Cash in account: {userCash}</p>
-        <button onClick={() => {setShowActivePositions(!showActivePositions)}}>
+        <button id={PortfolioCSS.SwitchButton} onClick={() => {setShowActivePositions(!showActivePositions)}}>
             Show {showActivePositions ? "Trade History" : "Active Positions" }
         </button>
         {showActivePositions ? <Portfolio /> : <History />}
