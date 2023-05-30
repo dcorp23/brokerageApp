@@ -1,6 +1,8 @@
 import axios from "axios";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const APIKEY = '4d422dfb74mshcea6b8b5e469e9ap13ad43jsn1cf17005f97f';
+const APIKEY = process.env.RAPID_API_KEY;
 
 export const getAllStocks = async () => {
     const options = {
@@ -60,7 +62,7 @@ export const getStockQuote = async (symbol) => {
           format: 'json'
         },
         headers: {
-          'X-RapidAPI-Key': '4d422dfb74mshcea6b8b5e469e9ap13ad43jsn1cf17005f97f',
+          'X-RapidAPI-Key': APIKEY,
           'X-RapidAPI-Host': 'twelve-data1.p.rapidapi.com'
         }
       };

@@ -22,7 +22,7 @@ export const PortfolioPage = () => {
     return (
     <div className="PortfolioPage">
         <Navbar />
-        <p>Cash in account: {userCash}</p>
+        <p id={PortfolioCSS.CashValue}>Cash in account: {userCash}</p>
         <button id={PortfolioCSS.SwitchButton} onClick={() => {setShowActivePositions(!showActivePositions)}}>
             Show {showActivePositions ? "Trade History" : "Active Positions" }
         </button>
